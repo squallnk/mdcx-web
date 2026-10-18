@@ -98,6 +98,16 @@ python scripts/smoke_test.py http://127.0.0.1:8000 <api-key>
 - 封面裁剪在前端 canvas 做，不再走本地图片编辑器。
 - `ping3` 的网络连通性检测在容器内非 root 运行时可能因缺 ICMP 权限失效，不影响刮削主流程。
 
+## 镜像
+
+```
+ghcr.io/squallnk/mdcx-web:latest
+```
+
+匿名可拉取（无需 `docker login`）。Actions 每次 push 到 `main` 自动构建。
+
+**只提供 `linux/amd64`**。`PyQt5==5.15.11` 在 Linux arm64 上没有预编译 wheel，pip 会退到 sdist，需要整套 Qt5 构建工具链（qmake / qtbase5-dev），体积和失败面都不划算；Unraid 主机实际都是 x86_64。
+
 ## 许可
 
 继承上游 **GPL-3.0**（见 `LICENSE`）。分发镜像时须向使用者提供对应源码，因此本仓库为公开仓库。
