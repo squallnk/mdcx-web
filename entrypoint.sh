@@ -61,17 +61,24 @@ if [ "${1:-}" = "uvicorn" ]; then
 fi
 
 # ---- 降权到 PUID:PGID ----
+# 镜像构建时用户/组可能因为 uid/gid 已被占用而创建失败，所以这里按需重建；
+# 任何一步失败都退回 root 继续跑，绝不因为降权失败就让容器启动即退出。
 if [ "$(id -u)" = "0" ] && { [ "${PUID:-0}" != "0" ] || [ "${PGID:-0}" != "0" ]; }; then
     PUID="${PUID:-99}"
     PGID="${PGID:-100}"
-    if getent group "$PGID" >/dev/null 2>&1; then
-        groupmod -o -g "$PGID" mdcx
-    else
-        groupmod -o -g "$PGID" mdcx
+
+    getent group mdcx >/dev/null 2>&1 || groupadd -o -g "$PGID" mdcx 2>/dev/null || true
+    groupmod -o -g "$PGID" mdcx 2>/dev/null || true
+    getent passwd mdcx >/dev/null 2>&1 \
+        || useradd -o -u "$PUID" -g "$PGID" -M -s /usr/sbin/nologin mdcx 2>/dev/null || true
+    usermod -o -u "$PUID" -g "$PGID" mdcx 2>/dev/null || true
+
+    chown -R "$PUID:$PGID" "$CONFIG_DIR" 2>/dev/null || true
+
+    if getent passwd mdcx >/dev/null 2>&1; then
+        exec gosu "$PUID:$PGID" "$@"
     fi
-    usermod -o -u "$PUID" -g "$PGID" mdcx
-    chown -R "$PUID:$PGID" "$CONFIG_DIR" || true
-    exec gosu "$PUID:$PGID" "$@"
+    log "无法降权到 ${PUID}:${PGID}（用户创建失败），继续以 root 运行"
 fi
 
 exec "$@"

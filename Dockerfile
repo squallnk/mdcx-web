@@ -45,11 +45,14 @@ COPY --from=frontend /ui/dist ./ui/dist
 # GPL-3.0 要求随二进制分发许可证原文
 COPY LICENSE ./LICENSE
 
-# mdcx 用 PUID/PGID 降权运行，默认对齐 Unraid 的 nobody:users。
-RUN groupadd -o -g 100 mdcx-group 2>/dev/null || true \
-    && useradd --system --no-create-home --shell /usr/sbin/nologin -u 99 -g 100 mdcx 2>/dev/null || true \
+# 降权用的用户/组，名字必须与 entrypoint.sh 里的 groupmod/usermod 一致（都叫 mdcx）。
+# 用 -o 允许 gid/uid 已被系统占用（Debian 的 users 组就占着 gid 100）；不用 --system，
+# 否则 uid 99 不在系统 uid 范围（100-999）里会被拒。装机失败也不致命：
+# entrypoint 会按需重建，最坏回退 root 运行。
+RUN groupadd -o -g 100 mdcx 2>/dev/null || true \
+    && useradd -o -u 99 -g 100 -M -s /usr/sbin/nologin mdcx 2>/dev/null || true \
     && mkdir -p /config /media /output \
-    && chown -R 99:100 /config
+    && chown -R 99:100 /config 2>/dev/null || true
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
