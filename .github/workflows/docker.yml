@@ -17,9 +17,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
       - name: Set up Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -41,12 +38,15 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=raw,value=latest,enable={{is_default_branch}}
 
+      # 只构建 amd64：PyQt5 5.15.11 在 Linux arm64 上没有预编译 wheel，
+      # pip 会退到 sdist，需要完整的 Qt5 构建工具链（qmake / qtbase5-dev），
+      # 耗时且易碎，镜像还会因此膨胀数百 MB。Unraid 主机实际都是 x86_64。
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
