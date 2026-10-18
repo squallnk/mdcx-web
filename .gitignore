@@ -1,0 +1,17 @@
+# 运行时产物 / 用户数据，绝不入库
+app/config.json
+app/MDCx.config
+app/userdata/
+app/ui/dist/
+app/ui/node_modules/
+app/ui/.rsbuild/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# 杂项
+.env
+*.log
+.DS_Store

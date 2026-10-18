@@ -1,0 +1,5 @@
+# 统一 LF：entrypoint.sh 若被换成 CRLF，容器里会以
+# `/usr/bin/env: 'bash\r': No such file or directory` 启动失败。
+* text=auto eol=lf
+*.png binary
+*.ico binary

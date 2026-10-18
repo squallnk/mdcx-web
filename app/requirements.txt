@@ -1,0 +1,24 @@
+# 由 app/pyproject.toml 的 [project] dependencies 抄出（去掉 win32 专属的 pyqt5-qt5），
+# 加上 pyproject 里 optional-dependencies 的 web 组。
+# 用 requirements.txt 而不是 pip install . , 是因为该项目的 setuptools 配置
+# (py-modules = ['mdcx','scripts']) 并非为打包安装设计, 直接装包容易失败。
+aiofiles==24.1.0
+aiolimiter==1.2.1
+av>=15.0.0
+beautifulsoup4==4.13.4
+curl-cffi==0.11.4
+httpx[socks]>=0.28.1
+lxml==5.4.0
+openai==1.91.0
+oshash==0.1.1
+parsel>=1.10.0
+patchright>=1.52.5
+pillow==11.3.0
+ping3==4.0.4
+pydantic-settings>=2.10.1
+pyqt5==5.15.11
+zhconv==1.4.3
+
+# [project.optional-dependencies] web
+fastapi>=0.116.1
+uvicorn[standard]>=0.35.0

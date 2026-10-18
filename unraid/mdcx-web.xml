@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Container version="2">
+  <Name>MDCx-Web</Name>
+  <Repository>ghcr.io/squallnk/mdcx-web:latest</Repository>
+  <Registry>https://ghcr.io/squallnk/mdcx-web</Registry>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/squallnk/mdcx-web/issues</Support>
+  <Project>https://github.com/squallnk/mdcx-web</Project>
+  <Overview>MDCx 的 Web 版本，单进程 uvicorn 同时提供 REST API、WebSocket 与前端页面。&#13;&#10;容器内工作目录为 /app，前端静态文件在 /app/ui/dist，用户数据在 /config。&#13;&#10;首次启动后打开 WebUI，在登录页填入 API key 即可使用。</Overview>
+  <Category>MediaApp:Video Tools:Utilities</Category>
+  <WebUI>http://[IP]:[PORT:8000]/</WebUI>
+  <TemplateURL>https://cdn.jsdelivr.net/gh/squallnk/mdcx-web@main/unraid/mdcx-web.xml</TemplateURL>
+  <Icon>https://cdn.jsdelivr.net/gh/squallnk/mdcx-web@main/unraid/icon.png</Icon>
+  <ExtraParams></ExtraParams>
+  <PostArgs></PostArgs>
+  <CPUset></CPUset>
+  <DateInstalled></DateInstalled>
+  <DonateText></DonateText>
+  <DonateLink></DonateLink>
+  <Requires></Requires>
+  <Config Name="WebUI 端口" Target="8000" Default="8000" Mode="" Description="WebUI 与 REST/WebSocket 共用的 HTTP 端口，容器内监听 8000。" Type="Port" Display="always" Required="true" Mask="false">8000</Config>
+  <Config Name="MOVIE_PATH" Target="/media" Default="/mnt/user/media" Mode="rw" Description="必填。待刮削的影片目录，映射到容器内 /media。目录不存在时入口脚本会自动 mkdir -p；填错会导致刮削找不到片源。" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/media</Config>
+  <Config Name="OUTPUT_PATH" Target="/output" Default="/mnt/user/mdcx-output" Mode="rw" Description="必填。刮削输出目录（nfo、图片、软链接等），映射到容器内 /output。目录不存在时入口脚本会自动 mkdir -p。" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/mdcx-output</Config>
+  <Config Name="CONFIG_PATH" Target="/config" Default="/mnt/user/appdata/mdcx-web" Mode="rw" Description="持久化配置目录，映射到容器内 /config。config.json 与自动生成的 api_key 存放于此，请勿删除。" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/mdcx-web</Config>
+  <Config Name="MDCX_API_KEY" Target="MDCX_API_KEY" Default="" Mode="" Description="访问 API 与 WebSocket 的密钥，通过请求头 X-API-KEY 传递。留空时由入口脚本生成随机值，持久化到 /config/api_key 并打印到容器日志。可随时在网页登录页使用该值登录。" Type="Variable" Display="always" Required="false" Mask="true"></Config>
+  <Config Name="MDCX_SAFE_DIRS" Target="MDCX_SAFE_DIRS" Default="/media,/output,/config" Mode="" Description="允许浏览与写入的目录白名单，逗号分隔。入口脚本会对每个目录执行 mkdir -p；路径与实际挂载不符会导致刮削读不到文件。" Type="Variable" Display="always" Required="true" Mask="false">/media,/output,/config</Config>
+  <Config Name="PUID" Target="PUID" Default="99" Mode="" Description="容器内运行用户的 UID。Unraid 的 nobody 用户为 99。" Type="Variable" Display="always" Required="true" Mask="false">99</Config>
+  <Config Name="PGID" Target="PGID" Default="100" Mode="" Description="容器内运行用户组的 GID。Unraid 的 users 用户组为 100。" Type="Variable" Display="always" Required="true" Mask="false">100</Config>
+  <Config Name="TZ" Target="TZ" Default="Asia/Shanghai" Mode="" Description="容器时区，影响日志与刮削时间戳。" Type="Variable" Display="always" Required="true" Mask="false">Asia/Shanghai</Config>
+  <Config Name="UMASK" Target="UMASK" Default="002" Mode="" Description="新建文件与目录的权限掩码，002 表示同组可写。" Type="Variable" Display="always" Required="true" Mask="false">002</Config>
+  <Config Name="MDCX_HOST" Target="MDCX_HOST" Default="0.0.0.0" Mode="" Description="服务监听地址，一般无需修改。" Type="Variable" Display="advanced" Required="false" Mask="false">0.0.0.0</Config>
+  <Config Name="MDCX_PORT" Target="MDCX_PORT" Default="8000" Mode="" Description="容器内监听端口（Dockerfile 默认 8000），需与上方端口映射保持一致，一般无需修改。" Type="Variable" Display="advanced" Required="false" Mask="false">8000</Config>
+</Container>

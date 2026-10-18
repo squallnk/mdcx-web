@@ -1,0 +1,17 @@
+# 前端依赖与产物在 Dockerfile 内部生成，不从宿主机带
+app/ui/node_modules/
+app/ui/dist/
+app/ui/.rsbuild/
+
+# Python 缓存
+**/__pycache__/
+**/*.py[cod]
+
+# 不进镜像的开发辅助
+scripts/
+docs/
+unraid/
+.github/
+.git/
+.gitignore
+README.md
